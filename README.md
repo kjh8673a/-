@@ -1,3 +1,3 @@
 # basic_web_development
 
-HTML, CSS, Javascript
+HTML, CSS, Javascript, jQuery, Ajax
