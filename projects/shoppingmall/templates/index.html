@@ -19,7 +19,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
-    <title>homework_02</title>
+    <title>Shopping Mall</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 
@@ -48,6 +48,7 @@
 
         .item-order {
             width: 500px;
+            margin-bottom: 50px;
         }
 
         .btn-order {
@@ -56,10 +57,12 @@
 
             display: block;
         }
+
         .wrap {
             width: 500px;
             margin: auto;
         }
+
         .rate {
             color: blue;
         }
@@ -68,7 +71,36 @@
     <script>
         $(document).ready(function () {
             get_rate();
+            listing();
         });
+
+        function listing() {
+            $.ajax({
+                type: "GET",
+                url: "/order",
+                data: {},
+                success: function (response) {
+                    if (response["result"] == "success") {
+                        let orders = response['orders'];
+                        for (let i = 0; i < orders.length; i++) {
+                            let name = orders[i]['name'];
+                            let count = orders[i]['count'];
+                            let address = orders[i]['address'];
+                            let phone = orders[i]['phone'];
+
+                            let temp_html = `<tr>
+                                                <th scope="row">${name}</th>
+                                                <td>${count}</td>
+                                                <td>${address}</td>
+                                                <td>${phone}</td>
+                                            </tr>`
+                            $('#orders-box').append(temp_html)
+                        }
+                    }
+                }
+            })
+        }
+
 
         function get_rate() {
             $.ajax({
@@ -83,7 +115,22 @@
         }
 
         function order() {
-            alert('주문이 완료되었습니다.')
+            let name = $('#order-name').val();
+            let count = $('#order-count').val();
+            let address = $('order-address').val();
+            let phone = $('#order-phone').val();
+
+            $.ajax({
+                type: "POST",
+                url: "/order",
+                data: {name_give:name, count_give:count, address_give:address, phone_give:phone},
+                success: function (response) {
+                    if (response["result"] == "success") {
+                        alert(response["msg"]);
+                        window.location.reload();
+                    }
+                }
+            })
         }
     </script>
 </head>
@@ -132,6 +179,18 @@
             <button type="button" onclick="order()" class="btn btn-primary btn-order">주문하기</button>
         </div>
     </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">이름</th>
+            <th scope="col">수량</th>
+            <th scope="col">주소</th>
+            <th scope="col">전화번호</th>
+        </tr>
+        </thead>
+        <tbody id="orders-box">
+        </tbody>
+        </table>
 
 </body>
 
